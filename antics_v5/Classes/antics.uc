@@ -1,0 +1,1 @@
+class antics extends Gameplay.Mutator config(antics);

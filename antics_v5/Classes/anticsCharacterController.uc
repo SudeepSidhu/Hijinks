@@ -1,0 +1,1 @@
+class anticsCharacterController extends Gameplay.PlayerCharacterController;
