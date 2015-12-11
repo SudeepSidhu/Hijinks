@@ -9,13 +9,18 @@ var int CurrentSpeedHackViolations;
 var int TotalSpeedHackViolations;
 
 var float SpeedHackDeltaModifier;
+var bool StopSpeedHacker;
 
 simulated function PostBeginPlay(){
 	
 	super.PostBeginPlay();
+	
 	CurrentSpeedHackViolations = 0;
 	TotalSpeedHackViolations = 0;
-	SpeedHackDeltaModifier = 1;	// initial value, set the proper one in the mutator
+	
+	// initial values, set the proper ones from the mutator
+	SpeedHackDeltaModifier = 1;	
+	StopSpeedHacker = false;
 }
 
 simulated function initHUDObjects()
@@ -88,7 +93,19 @@ simulated function Vector calculateScreenPosition(class objectClass, Vector obje
 		if (TraceReceiver != None && ClassIsChildOf(TraceReceiver.class, class'Rook')){
 			reset = false;
 		}
+		
+		/*
+		// Basic check from the HUD, panzer and 3d radars bypass this
+		if(class'RadarInfo'.default.bOccluded && Pawn != None)
+		{
+			if(!FastTrace(objectPos, Pawn.Location + Pawn.EyePosition()))
+			{
+				Reset = true;
+			}
+		}
+		*/
 	}
+	
 	if (Reset){
 		ScreenPos.x = -1;
 		ScreenPos.y = -1;
@@ -187,8 +204,13 @@ function TribesServerMove
 	{
 		TimeMargin = 0;
 	}
-	else if (!CheckSpeedHack(DeltaTime*SpeedHackDeltaModifier))
+	else if (!CheckSpeedHack(DeltaTime*SpeedHackDeltaModifier) && analogueForward != 0)	// movement check for alt+tab false positives
 	{
+		if (StopSpeedHacker)
+		{
+			Pawn.unifiedSetVelocity(vect(0,0,0));
+		}
+		
 		CurrentSpeedHackViolations++;
 		TotalSpeedHackViolations++;
 	}

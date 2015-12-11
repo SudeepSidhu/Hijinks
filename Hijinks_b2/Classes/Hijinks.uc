@@ -6,6 +6,8 @@ var string AnticsServerPackage;
 var config string LogFileName;
 
 var config float SpeedHackSensitivity;
+var config bool StopSpeedHackerOnDetection;
+
 var config int SpeedHackViolationsBeforeDiscipline;
 var config bool SpeedHackDisciplineWithCrater;
 var config bool SpeedHackDisciplineWithKick;
@@ -56,7 +58,18 @@ function Destroyed()
 // Notification that a player is exiting
 function NotifyLogout(Controller Exiting)
 {
-	LogPlayerSession(HijinksPlayerCharacterController(Exiting));
+	local HijinksPlayerCharacterController C;
+	
+	C = HijinksPlayerCharacterController(Exiting);
+	
+	LogPlayerSession(C);
+	
+	C.HijinksMutator = Self;
+	C.SpeedHackDeltaModifier = 1.0;
+	C.StopSpeedHacker = false;
+	
+	ResetSpeedViolations(C, true);
+	
 	Super.NotifyLogout(Exiting);
 }
 
@@ -116,11 +129,7 @@ function CheckCurrentPlayers()
 
 		if (PC.HijinksMutator != Self)
 		{
-			PC.HijinksMutator = Self;
-			PC.SpeedHackDeltaModifier = SpeedHackSensitivity;
-			ResetSpeedViolations(PC, true);
-			
-			LogInternal(GetPlayerCard(PC)$" is now being tracked by Hijinks", true);
+			TrackPlayer(PC);
 		}
 		else if (PC.currentSpeedHackViolations > SpeedHackViolationsBeforeDiscipline)
 		{
@@ -129,6 +138,16 @@ function CheckCurrentPlayers()
 			ResetSpeedViolations(PC, false);
 		}
 	}
+}
+
+function TrackPlayer(HijinksPlayerCharacterController C)
+{
+	C.HijinksMutator = Self;
+	C.SpeedHackDeltaModifier = SpeedHackSensitivity;
+	C.StopSpeedHacker = StopSpeedHackerOnDetection;
+	
+	ResetSpeedViolations(C, true);
+	LogInternal(GetPlayerCard(C)$" is now being tracked by Hijinks", true);
 }
 
 function LogPlayerSession(HijinksPlayerCharacterController C)
@@ -295,13 +314,14 @@ function string CorrectDateFormat(Int Value, int Places)
 
 defaultproperties
 {
-	SpeedHackSensitivity = 1.260;
-	SpeedHackViolationsBeforeDiscipline = 1000;
+	LogFileName = "HijinksLog";
+	SpeedHackSensitivity = 1.0;
+	StopSpeedHackerOnDetection = false;
+	SpeedHackViolationsBeforeDiscipline = 100;
 	SpeedHackDisciplineWithCrater = true;
 	SpeedHackDisciplineWithKick = false;
 	SpeedHackDisciplineWithBan = false;
 	SpeedHackBanIsPermanent = false;
 	SpeedHackDisciplineWithPublicShaming = false;
 	BroadcastKicksAndBans = false;
-	LogFileName = "Hijinks_log";
 }

@@ -14,8 +14,7 @@ function FixObjectiveData()
 			
 		while (ObjInfo != None)
 		{
-			if (ObjInfo.numObjectiveActors > 0 && 
-				ObjInfo.type == EObjectiveType.ObjectiveType_Primary)
+			if (ObjInfo.type == EObjectiveType.ObjectiveType_Primary)
 			{
 				for (i = 0; i < ObjInfo.numObjectiveActors; ++i){
 				
