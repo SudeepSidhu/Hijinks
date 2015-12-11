@@ -48,41 +48,8 @@ simulated function Vector calculateScreenPosition(class objectClass, Vector obje
 	local Vector HitLocation;
 	local Vector HitNormal;
 	local Actor TraceReceiver;
-		
-	// TODO Remove this line after testing
-	// return super.calculateScreenPosition(objectClass, objectPos);
 	
 	Reset = false;
-	
-	/*
-	We can probably skip this one, since we "fix" the info in the hud manager
-	
-	if (ClassIsChildOf(objectClass, class'ObjectiveInfo'))
-	{
-		ObjInfo = character.team().objectives.first();
-		
-		while (ObjInfo != None && !Reset)
-		{
-			if (ObjInfo.numObjectiveActors > 0 && 
-				ObjInfo.type == EObjectiveType.ObjectiveType_Primary  &&
-				ObjInfo.class == objectClass)
-			{
-				for (i = 0; i < ObjInfo.numObjectiveActors; ++i){
-				
-					if (ObjInfo.allyType[i] != EAllyType.AllyType_Neutral && 
-						ObjInfo.pos[i].X == objectPos.X && 
-						ObjInfo.pos[i].Y == objectPos.Y)
-					{
-						Reset = true;
-						break;
-					}
-				}
-			}
-			
-			ObjInfo = ObjInfo.next;
-		}
-	}
-	*/
 	
 	if (!Reset && ClassIsChildOf(objectClass, class'RadarInfo')){
 		
@@ -93,17 +60,6 @@ simulated function Vector calculateScreenPosition(class objectClass, Vector obje
 		if (TraceReceiver != None && ClassIsChildOf(TraceReceiver.class, class'Rook')){
 			reset = false;
 		}
-		
-		/*
-		// Basic check from the HUD, panzer and 3d radars bypass this
-		if(class'RadarInfo'.default.bOccluded && Pawn != None)
-		{
-			if(!FastTrace(objectPos, Pawn.Location + Pawn.EyePosition()))
-			{
-				Reset = true;
-			}
-		}
-		*/
 	}
 	
 	if (Reset){
@@ -293,6 +249,4 @@ function TribesServerMove
 		if (debugLogLevel > 0 && ClientErr != 10000)
 			log("Client Error at "$TimeStamp$" is "$ClientErr$" LocDiff "$LocDiff$" Physics "$Pawn.Physics);
 	}
-
-	//log("Server moved stamp "$TimeStamp$" location "$Pawn.Location$" Acceleration "$Pawn.Acceleration$" Velocity "$Pawn.Velocity);
 }
