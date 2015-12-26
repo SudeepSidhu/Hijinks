@@ -123,19 +123,22 @@ function CheckCurrentPlayers()
 	local Controller C;
 	local HijinksPlayerCharacterController PC;
 	
-	for(C = Level.ControllerList; C != None && C.PlayerReplicationInfo != None; C = C.NextController)
+	for(C = Level.ControllerList; C != None; C = C.NextController)
 	{
 		PC = HijinksPlayerCharacterController(C);
-
-		if (PC.HijinksMutator != Self)
+	
+		if (PC != None && PC.PlayerReplicationInfo != None)
 		{
-			TrackPlayer(PC);
-		}
-		else if (PC.currentSpeedHackViolations > SpeedHackViolationsBeforeDiscipline)
-		{
-			LogSpeedHacker(PC);
-			DisciplineSpeedHacker(PC);
-			ResetSpeedViolations(PC, false);
+			if (PC.HijinksMutator != Self)
+			{
+				TrackPlayer(PC);
+			}
+			else if (PC.currentSpeedHackViolations > SpeedHackViolationsBeforeDiscipline)
+			{
+				LogSpeedHacker(PC);
+				DisciplineSpeedHacker(PC);
+				ResetSpeedViolations(PC, false);
+			}
 		}
 	}
 }
